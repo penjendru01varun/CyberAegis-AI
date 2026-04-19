@@ -1,0 +1,78 @@
+/* ── MagicBento Grid ── */
+.magic-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--bento-cols, 3), 1fr);
+  gap: var(--bento-gap, 1.5rem);
+}
+
+@media (max-width: 1024px) {
+  .magic-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .magic-bento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── MagicBento Card ── */
+.magic-bento-card {
+  position: relative;
+  background: rgba(13, 13, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+  cursor: default;
+
+  /* Default glow vars */
+  --mouse-x: -9999px;
+  --mouse-y: -9999px;
+  --glow-color: rgba(0, 242, 255, 0.18);
+  --border-color: rgba(0, 242, 255, 0.35);
+}
+
+.magic-bento-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: var(--border-color);
+  box-shadow:
+    0 20px 60px -10px rgba(0, 0, 0, 0.6),
+    0 0 0 1px var(--border-color);
+}
+
+/* The moving spotlight glow */
+.magic-bento-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    400px circle at var(--mouse-x) var(--mouse-y),
+    var(--glow-color),
+    transparent 65%
+  );
+  transition: background 0.1s ease;
+}
+
+/* Card content sits above the glow */
+.magic-bento-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+/* Span columns utility classes */
+.bento-col-2 { grid-column: span 2; }
+.bento-col-3 { grid-column: span 3; }
+.bento-row-2 { grid-row: span 2; }
+
+@media (max-width: 1024px) {
+  .bento-col-2,
+  .bento-col-3 {
+    grid-column: span 1;
+  }
+}

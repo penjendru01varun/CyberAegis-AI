@@ -1,0 +1,27 @@
+.click-spark-wrapper {
+  position: relative;
+}
+
+.click-spark-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: spark-fly linear forwards;
+  z-index: 9999;
+  box-shadow: 0 0 6px 2px currentColor;
+}
+
+@keyframes spark-fly {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}

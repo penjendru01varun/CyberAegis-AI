@@ -1,0 +1,21 @@
+# HyberShield AI Backend — Python Dependencies
+
+# Core framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.0
+pydantic==2.10.3
+
+# Rate limiting
+slowapi==0.1.9
+
+# Async HTTP (for future external integrations)
+httpx==0.28.1
+
+# Utilities
+python-multipart==0.0.17
+python-dotenv==1.0.1
+
+# Optional: real DB drivers (uncomment when deploying with full stack)
+# asyncpg==0.30.0          # PostgreSQL async driver
+# motor==3.6.0             # MongoDB async driver
+# neo4j==5.27.0            # Neo4j graph DB driver
