@@ -165,8 +165,8 @@ class AgentOrchestrator:
         if es.get("protection_triggered"):
             if es.get("hold_required"):
                 return {
-                    "decision": "OTP", # In the UI we show HOLD but the banking decision is OTP/PENDING
-                    "explanation": f"👵 ElderShield Protected: {', '.join(es.get('reasons', []))}. 30-min hold applied."
+                    "decision": "HOLD", 
+                    "explanation": f"👵 ElderShield Protected: {', '.join(es.get('reasons', []))}. 30-min safety hold applied for manual review."
                 }
         
         # Priority 3: GhostNet pre-attack escalation

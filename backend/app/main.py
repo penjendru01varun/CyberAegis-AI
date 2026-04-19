@@ -24,7 +24,7 @@ from app.agents import agent_factory
 from app.orchestrator.agent_orchestrator import orchestrator
 from app.models.schemas import (
     OrchestratorRequest, OrchestratorResponse, SystemHealth, AgentHealth,
-    Decision
+    Decision, ReviewItem, ReviewStatus, ReviewActionRequest
 )
 from app.utils.db_mock import init_db
 
@@ -61,6 +61,8 @@ app.add_middleware(
 async def startup_event():
     logger.info("Initializing HyberShield AI Demo Database and Agents...")
     init_db()
+    # Global mock for HITL
+    app.state.reviews = {}
     # Agent factory initializes on first access or via import
     _ = agent_factory.get_all_agents()
     logger.info("Ready for transactions.")
@@ -101,10 +103,48 @@ async def root():
 async def orchestrate_endpoint(req: OrchestratorRequest, request: Request):
     try:
         result = await orchestrator.orchestrate(req)
+        
+        # If HOLD is issued, create a pending review automatically
+        if result.final_decision == Decision.HOLD:
+            review_id = f"rev_{uuid.uuid4().hex[:8]}"
+            review = ReviewItem(
+                review_id=review_id,
+                transaction_id=result.orchestration_id,
+                user_id=req.user_id,
+                amount=req.amount,
+                risk_score=result.risk_score,
+                reason=result.explanation,
+                timestamp=datetime.now().isoformat()
+            )
+            app.state.reviews[review_id] = review
+            logger.info(f"Transaction {result.orchestration_id} queued for HUMAN REVIEW (ID: {review_id})")
+            
         return result
     except Exception as e:
         logger.error(f"Orchestration failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                        HUMAN-IN-THE-LOOP (HITL)                             ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+@app.get("/api/reviews", tags=["HITL"])
+async def get_pending_reviews():
+    """List all transactions pending analyst review"""
+    return list(app.state.reviews.values())
+
+@app.post("/api/reviews/{review_id}/action", tags=["HITL"])
+async def take_review_action(review_id: str, action_req: ReviewActionRequest):
+    """Approve or Reject a transaction currently on hold"""
+    if review_id not in app.state.reviews:
+        raise HTTPException(status_code=404, detail="Review item not found")
+    
+    review = app.state.reviews[review_id]
+    review.status = action_req.action
+    review.analyst_notes = action_req.notes
+    
+    logger.info(f"Review {review_id} {action_req.action} by analyst. Notes: {action_req.notes}")
+    return {"status": "success", "review": review}
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║                         INDIVIDUAL AGENT TESTING                           ║

@@ -3,28 +3,17 @@ import { ArrowRight, Shield, Zap } from 'lucide-react';
 import ClickSpark from '../components/animations/ClickSpark';
 
 // Lazy-load the heavy Three.js background so it never blocks render
-const Antigravity = React.lazy(() =>
-  import('../components/animations/Antigravity')
+const Hyperspeed = React.lazy(() =>
+  import('../components/animations/Hyperspeed')
 );
 
 const Hero = ({ onStart, onExplore }) => {
   return (
     <section className="section" style={styles.hero}>
-      {/* ── Antigravity particle background ── */}
+      {/* ── Hyperspeed warp-speed background ── */}
       <div style={styles.canvas}>
         <Suspense fallback={null}>
-          <Antigravity
-            count={280}
-            magnetRadius={7}
-            ringRadius={8}
-            waveSpeed={0.35}
-            waveAmplitude={0.9}
-            particleSize={1.8}
-            lerpSpeed={0.055}
-            color="#00f2ff"
-            autoAnimate={true}
-            particleVariance={1.2}
-          />
+          <Hyperspeed speed={0.8} />
         </Suspense>
       </div>
 

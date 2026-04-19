@@ -16,6 +16,7 @@ class Decision(str, Enum):
     ALLOW = "ALLOW"
     ALERT = "ALERT"
     OTP = "OTP"
+    HOLD = "HOLD"
     BLOCK = "BLOCK"
 
 
@@ -206,3 +207,24 @@ class SystemHealth(BaseModel):
     agents: List[AgentHealth]
     total_agents: int
     healthy_agents: int
+# ── Human-in-the-loop (HITL) ──────────────────────────────────────────────────
+
+class ReviewStatus(str, Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+class ReviewItem(BaseModel):
+    review_id: str
+    transaction_id: str
+    user_id: str
+    amount: float
+    risk_score: int
+    reason: str
+    timestamp: str
+    status: ReviewStatus = ReviewStatus.PENDING
+    analyst_notes: Optional[str] = None
+
+class ReviewActionRequest(BaseModel):
+    action: ReviewStatus # APPROVED or REJECTED
+    notes: str
