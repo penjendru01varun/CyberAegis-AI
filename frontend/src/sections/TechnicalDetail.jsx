@@ -3,12 +3,13 @@ import { Brain, Network, Database, Server, Cpu, ChevronRight } from 'lucide-reac
 import MagicBento, { MagicBentoCard } from '../components/animations/MagicBento';
 
 const agents = [
-  { name: 'VeraAgent',    role: 'Verifier',      desc: 'Link/Payload verification and decoy signal detection.', color: 'var(--primary)',   glow: 'rgba(0,242,255,0.14)',    border: 'rgba(0,242,255,0.38)' },
-  { name: 'FraudAgent',   role: 'Scorer',        desc: 'ML-based velocity & graph anomaly scoring.', color: 'var(--secondary)', glow: 'rgba(112,0,255,0.14)',    border: 'rgba(112,0,255,0.38)' },
-  { name: 'ElderAgent',   role: 'Protector',     desc: 'Nudge signals & voice-narrative coercion detection.', color: 'var(--accent)',    glow: 'rgba(255,0,200,0.12)',    border: 'rgba(255,0,200,0.35)' },
-  { name: 'GhostNet',     role: 'Hunter',        desc: 'Decoy transaction monitor — fingerprints attackers.', color: '#00ff88',          glow: 'rgba(0,255,136,0.12)',    border: 'rgba(0,255,136,0.35)' },
-  { name: 'NeuroGuard',   role: 'Sentinel',      desc: 'Device/biometric profiling with behavioral drift.', color: '#ffaa00',          glow: 'rgba(255,170,0,0.12)',    border: 'rgba(255,170,0,0.35)' },
-  { name: 'Nexus',        role: 'Orchestrator',  desc: 'Signal coordinator and final decision arbitrator.', color: '#ff6b6b',          glow: 'rgba(255,107,107,0.12)', border: 'rgba(255,107,107,0.35)' },
+  { name: 'GhostNet',     role: 'Decoy Hunter',  desc: 'Manages decoy accounts to catch reconnaissance scanning BEFORE the attack.', color: '#00ff88', glow: 'rgba(0,255,136,0.12)', border: 'rgba(0,255,136,0.35)' },
+  { name: 'Fingerprint',  role: 'Profiler',      desc: 'Builds unique attacker identifiers using hardware and behavioral markers.', color: 'var(--primary)', glow: 'rgba(0,242,255,0.12)', border: 'rgba(0,242,255,0.35)' },
+  { name: 'BlastRadius',  role: 'Predictor',     desc: 'Predicts potential victims by analyzing attacker scan patterns patterns.', color: '#7000ff', glow: 'rgba(112,0,255,0.12)', border: 'rgba(112,0,255,0.35)' },
+  { name: 'ReconSignal',  role: 'Sentinel',      desc: 'Detects "low and slow" scanning signals that evade standard filters.', color: '#ffaa00', glow: 'rgba(255,170,0,0.12)', border: 'rgba(255,170,0,0.35)' },
+  { name: 'RiskEngine',   role: 'Brain',         desc: 'Central decision aggregator using a weighted multi-factor scoring formula.', color: 'var(--secondary)', glow: 'rgba(112,0,255,0.12)', border: 'rgba(112,0,255,0.38)' },
+  { name: 'ElderShield',  role: 'Guardian',      desc: 'Protects elderly users from coercion scams via nudge-logic and safety holds.', color: 'var(--accent)', glow: 'rgba(255,0,200,0.12)', border: 'rgba(255,0,200,0.35)' },
+  { name: 'VoiceGuard',   role: 'Deepfake Det.', desc: 'Analyzes spectral artifacts to identify AI-generated or synthetic voices.', color: '#F24E5E', glow: 'rgba(242,78,94,0.12)', border: 'rgba(242,78,94,0.35)' },
 ];
 
 const techStack = [

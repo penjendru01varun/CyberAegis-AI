@@ -43,7 +43,7 @@ class AgentOrchestrator:
             agent_results[name] = output
             agent_traces.append(AgentTrace(
                 name=name,
-                time_ms=output.get("_execution_time_ms", 0),
+                time_ms=int(output.get("_execution_time_ms", 0)),
                 status="ok",
                 output=output
             ))
@@ -62,7 +62,7 @@ class AgentOrchestrator:
         agent_results["blastradius"] = blastradius_out
         agent_traces.append(AgentTrace(
             name="blastradius",
-            time_ms=blastradius_out.get("_execution_time_ms", 0),
+            time_ms=int(blastradius_out.get("_execution_time_ms", 0)),
             status="ok",
             output=blastradius_out
         ))
@@ -85,7 +85,7 @@ class AgentOrchestrator:
         agent_results["riskengine"] = riskengine_out
         agent_traces.append(AgentTrace(
             name="riskengine",
-            time_ms=riskengine_out.get("_execution_time_ms", 0),
+            time_ms=int(riskengine_out.get("_execution_time_ms", 0)),
             status="ok",
             output=riskengine_out
         ))
@@ -104,7 +104,7 @@ class AgentOrchestrator:
         agent_results["eldershield"] = eldershield_out
         agent_traces.append(AgentTrace(
             name="eldershield",
-            time_ms=eldershield_out.get("_execution_time_ms", 0),
+            time_ms=int(eldershield_out.get("_execution_time_ms", 0)),
             status="ok",
             output=eldershield_out
         ))

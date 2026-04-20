@@ -24,7 +24,7 @@ class GhostNetAgent(BaseAgent):
         start = time.perf_counter()
         
         # Extract data from context
-        ghost_upi_id = context.get("ghost_upi_id", "")
+        ghost_upi_id = context.get("ghost_upi_id") or ""
         scan_velocity = context.get("scan_velocity", 0)
         source_ip = context.get("source_ip", "0.0.0.0")
         user_agent = context.get("user_agent", "unknown")

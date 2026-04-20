@@ -1,91 +1,100 @@
-import React from 'react';
-import { Shield, LayoutDashboard, Activity, Terminal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { Shield } from 'lucide-react';
 
 const Navbar = () => {
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      window.scrollTo({
-        top: el.offsetTop - 100,
-        behavior: 'smooth'
-      });
-    }
-  };
+    const [isScrolled, setIsScrolled] = useState(false);
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
 
-  return (
-    <nav className="glass" style={styles.nav}>
-      <div style={styles.logo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-        <Shield size={28} color="var(--primary)" />
-        <span style={styles.logoText}>HyberShield <span style={{ color: 'var(--primary)' }}>AI</span></span>
-      </div>
-      
-      <div style={styles.links}>
-        <button style={styles.btn} onClick={() => scrollTo('simulation')}>
-          <Terminal size={16} /> Live Demo
-        </button>
-        <button style={styles.btn} onClick={() => scrollTo('architecture')}>
-          <Activity size={16} /> Architecture
-        </button>
-        <button style={styles.btnPrimary} onClick={() => scrollTo('simulation')}>
-           Get Started
-        </button>
-      </div>
-    </nav>
-  );
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollTo = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    return (
+        <>
+            <motion.div
+                className="scroll-progress"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
+                    transformOrigin: '0%',
+                    zIndex: 2000,
+                    scaleX
+                }}
+            />
+            <nav style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                padding: isScrolled ? '15px 0' : '25px 0',
+                background: isScrolled ? 'rgba(5, 7, 15, 0.85)' : 'transparent',
+                backdropFilter: isScrolled ? 'blur(15px)' : 'none',
+                borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+                zIndex: 1000,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}>
+                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+                        <div style={{ background: 'var(--primary)', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Shield size={20} color="#000" strokeWidth={3} />
+                        </div>
+                        <span style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#fff' }}>HyberShield<span style={{ color: 'var(--primary)' }}>AI</span></span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
+                        <NavItem label="Solution" onClick={() => scrollTo('solution')} />
+                        <NavItem label="Architecture" onClick={() => scrollTo('architecture')} />
+                        <NavItem label="Simulation" onClick={() => scrollTo('simulation')} />
+                        <button 
+                            className="btn-primary" 
+                            style={{ padding: '10px 20px', fontSize: '0.85rem' }}
+                            onClick={() => scrollTo('simulation')}
+                        >
+                            TRY LIVE SWARM
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </>
+    );
 };
 
-const styles = {
-  nav: {
-    position: 'fixed',
-    top: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '90%',
-    maxWidth: '1200px',
-    height: '70px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0 30px',
-    zIndex: 1000,
-    borderRadius: '20px'
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    cursor: 'pointer'
-  },
-  logoText: {
-    fontSize: '1.2rem',
-    fontWeight: '900',
-    letterSpacing: '1px'
-  },
-  links: {
-    display: 'flex',
-    gap: '20px',
-    alignItems: 'center'
-  },
-  btn: {
-    background: 'transparent',
-    color: 'var(--text-dim)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '0.85rem',
-    padding: '8px 12px',
-    border: 'none',
-    fontWeight: 600
-  },
-  btnPrimary: {
-    background: 'var(--primary)',
-    color: '#000',
-    padding: '10px 24px',
-    borderRadius: '12px',
-    fontSize: '0.85rem',
-    fontWeight: 800,
-    boxShadow: '0 0 15px var(--primary-glow)'
-  }
-};
+const NavItem = ({ label, onClick }) => (
+    <span 
+        onClick={onClick}
+        style={{ 
+            fontSize: '0.9rem', 
+            fontWeight: 600, 
+            color: 'rgba(255,255,255,0.6)', 
+            cursor: 'pointer',
+            transition: 'color 0.2s ease',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+        }}
+        onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+    >
+        {label}
+    </span>
+);
 
 export default Navbar;

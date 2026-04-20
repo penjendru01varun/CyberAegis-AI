@@ -5,7 +5,14 @@ __pycache__/
 venv/
 ENV/
 env/
+
+# Env — keep secrets out, allow example + production files
 .env
+!.env.example
+!.env.production
+
+# SQLite local demo DB
+*.db
 
 # Node.js
 node_modules/

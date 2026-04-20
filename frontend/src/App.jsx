@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import ProductWebsite from './ProductWebsite';
+import ChatWidget from './components/ChatWidget';
 import axios from 'axios';
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
       <main style={{ paddingTop: '80px' }}>
         <ProductWebsite />
       </main>
+
+      <ChatWidget />
     </div>
   );
 }

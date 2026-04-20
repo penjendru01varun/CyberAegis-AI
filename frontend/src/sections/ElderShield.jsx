@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Bell, Shield, Clock, Phone, AlertCircle } from 'lucide-react';
+import { Heart, Bell, Shield, Clock, Phone, AlertCircle, Activity } from 'lucide-react';
 
 const ElderShield = () => {
   return (

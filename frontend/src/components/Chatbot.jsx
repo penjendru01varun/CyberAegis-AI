@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, User, Bot, Sparkles } from 'lucide-react';
+import { MessageSquare, Send, X, User, Bot, Sparkles, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'bot', content: 'Hello! I am your HyberShield AI Copilot. How can I help you understand our fraud prevention layers today?' }
+    { 
+        role: 'bot', 
+        content: 'Good evening! I am Varun, your HyberShield AI Cybersecurity Assistant from Team CIPHER BREAKERS. How can I help you understand our 7-agent defense system or our ROI metrics today?',
+        suggestions: ["Who is Varun?", "Explain 7 agents", "ROI Metrics"]
+    }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -16,35 +20,35 @@ const Chatbot = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (textOverride = null) => {
+    const messageText = textOverride || input;
+    if (!messageText.trim()) return;
 
-    const userMsg = { role: 'user', content: input };
+    const userMsg = { role: 'user', content: messageText };
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    if (!textOverride) setInput('');
     setIsTyping(true);
 
     try {
-      const res = await axios.post('http://localhost:8000/api/chat', { message: userMsg.content });
-      setMessages(prev => [...prev, { role: 'bot', content: res.data.response }]);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await axios.post(`${API_URL}/api/chat`, { message: userMsg.content });
+      
+      setMessages(prev => [...prev, { 
+          role: 'bot', 
+          content: res.data.response,
+          suggestions: res.data.suggestions || []
+      }]);
     } catch (err) {
-      console.warn("Chatbot backend not reached, using fallback.");
-      const msg = userMsg.content.toLowerCase();
-      let response = "I'm the HyberShield AI Copilot. I can help you understand our 3-layer defense. What would you like to know?";
-      
-      if (msg.includes("vera")) response = "VeraShield is our proactive layer. It uses ghost accounts to trap attackers before they reach real users.";
-      if (msg.includes("fraud")) response = "FraudShield is our real-time layer. it computes risk scores in under 250ms for every transaction.";
-      if (msg.includes("elder")) response = "ElderShield protects users over 60 from scams using cooling periods and family alerts.";
-      
-      setTimeout(() => {
-        setMessages(prev => [...prev, { role: 'bot', content: response }]);
-        setIsTyping(false);
-      }, 600);
-      return;
+      console.error("Chatbot API error:", err);
+      setMessages(prev => [...prev, { 
+          role: 'bot', 
+          content: "I'm having trouble connecting to the HyberShield neural network. Please verify the backend status." 
+      }]);
+    } finally {
+      setIsTyping(false);
     }
-    setIsTyping(false);
   };
 
   return (
@@ -60,32 +64,53 @@ const Chatbot = () => {
           >
             <div style={styles.header}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Sparkles size={20} color="var(--primary)" />
+                <ShieldCheck size={20} color="#00ffaa" />
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>HyberShield Copilot</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--success)' }}>Online | Multi-Agent Analysis</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>Varun • HyberShield AI</div>
+                  <div style={{ fontSize: '0.7rem', color: '#00ffaa', fontWeight: 700 }}>Lead Analyst | Cipher Breakers</div>
                 </div>
               </div>
-              <X size={20} cursor="pointer" onClick={() => setIsOpen(false)} />
+              <X size={20} cursor="pointer" onClick={() => setIsOpen(false)} color="rgba(255,255,255,0.5)" />
             </div>
 
             <div style={styles.messages} ref={scrollRef}>
               {messages.map((m, i) => (
-                <div key={i} style={{ ...styles.msgRow, justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                  <div style={{ 
-                    ...styles.bubble, 
-                    background: m.role === 'user' ? 'var(--primary-glow)' : 'rgba(255,255,255,0.05)',
-                    border: m.role === 'user' ? '1px solid var(--primary)' : '1px solid var(--border)',
-                    borderBottomRightRadius: m.role === 'user' ? '2px' : '12px',
-                    borderBottomLeftRadius: m.role === 'bot' ? '2px' : '12px',
-                  }}>
-                    {m.content}
-                  </div>
+                <div key={i} style={{ marginBottom: '15px' }}>
+                    <div style={{ ...styles.msgRow, justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                        {m.role === 'bot' && (
+                            <div style={styles.avatar}>
+                                <Bot size={14} color="#00ffaa" />
+                            </div>
+                        )}
+                        <div style={{ 
+                            ...styles.bubble, 
+                            background: m.role === 'user' ? 'rgba(0, 255, 170, 0.2)' : 'rgba(255,255,255,0.05)',
+                            border: m.role === 'user' ? '1px solid rgba(0, 255, 170, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+                            borderBottomRightRadius: m.role === 'user' ? '2px' : '16px',
+                            borderBottomLeftRadius: m.role === 'bot' ? '2px' : '16px',
+                        }}>
+                            {m.content}
+                        </div>
+                    </div>
+                    {m.suggestions && m.suggestions.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px', marginLeft: '35px' }}>
+                            {m.suggestions.map((s, si) => (
+                                <button
+                                    key={si}
+                                    onClick={() => handleSend(s)}
+                                    style={styles.suggestionBtn}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
               ))}
               {isTyping && (
                 <div style={styles.msgRow}>
-                  <div style={{ ...styles.bubble, opacity: 0.5 }}>Typing...</div>
+                  <div style={styles.avatar}><Bot size={14} color="#00ffaa" /></div>
+                  <div style={{ ...styles.bubble, opacity: 0.5 }}>Analyzing...</div>
                 </div>
               )}
             </div>
@@ -95,10 +120,10 @@ const Chatbot = () => {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyPress={e => e.key === 'Enter' && handleSend()}
-                placeholder="Ask about VeraShield, anomalies..."
+                placeholder="Ask about GhostNet, ROI, or the 7 agents..."
                 style={styles.input}
               />
-              <button style={styles.sendBtn} onClick={handleSend}>
+              <button style={styles.sendBtn} onClick={() => handleSend()}>
                 <Send size={18} />
               </button>
             </div>
@@ -113,6 +138,7 @@ const Chatbot = () => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <MessageSquare color="black" />
+        {!isOpen && <div style={styles.onlineDot} />}
       </motion.div>
     </div>
   );
@@ -121,38 +147,55 @@ const Chatbot = () => {
 const styles = {
   container: {
     position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    zIndex: 2000
+    bottom: '25px',
+    right: '25px',
+    zIndex: 2000,
+    fontFamily: "'Inter', sans-serif"
   },
   launcher: {
-    width: '60px',
-    height: '60px',
+    width: '65px',
+    height: '65px',
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+    background: '#00ffaa',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    boxShadow: '0 5px 20px var(--primary-glow)'
+    boxShadow: '0 8px 32px rgba(0, 255, 170, 0.4)',
+    position: 'relative'
+  },
+  onlineDot: {
+    position: 'absolute',
+    top: '2px',
+    right: '2px',
+    width: '14px',
+    height: '14px',
+    background: '#00ffaa',
+    border: '3px solid #000',
+    borderRadius: '50%'
   },
   chatWindow: {
-    width: '380px',
-    height: '500px',
+    width: '400px',
+    height: '600px',
     position: 'absolute',
-    bottom: '80px',
+    bottom: '90px',
     right: '0',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    borderRadius: '24px',
+    boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    backdropFilter: 'blur(20px)',
+    background: 'rgba(15, 23, 42, 0.95)'
   },
   header: {
-    padding: '15px 20px',
-    borderBottom: '1px solid var(--border)',
+    padding: '20px',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.03)'
+    background: 'rgba(255,255,255,0.02)'
   },
   messages: {
     flex: 1,
@@ -160,45 +203,72 @@ const styles = {
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px'
+    gap: '5px'
   },
   msgRow: {
     display: 'flex',
-    width: '100%'
+    width: '100%',
+    gap: '10px',
+    alignItems: 'flex-end'
+  },
+  avatar: {
+      width: '28px',
+      height: '28px',
+      borderRadius: '50%',
+      background: 'rgba(0, 255, 170, 0.1)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0
   },
   bubble: {
     maxWidth: '80%',
-    padding: '10px 15px',
-    borderRadius: '12px',
+    padding: '12px 16px',
+    borderRadius: '16px',
     fontSize: '0.9rem',
-    lineHeight: '1.4'
+    lineHeight: '1.5',
+    color: '#ececec',
+    whiteSpace: 'pre-wrap'
+  },
+  suggestionBtn: {
+      padding: '6px 14px',
+      borderRadius: '20px',
+      border: '1px solid rgba(0, 255, 170, 0.3)',
+      background: 'rgba(0, 255, 170, 0.05)',
+      color: '#00ffaa',
+      fontSize: '0.75rem',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease'
   },
   inputArea: {
-    padding: '15px',
-    borderTop: '1px solid var(--border)',
+    padding: '20px',
+    borderTop: '1px solid rgba(255,255,255,0.05)',
     display: 'flex',
-    gap: '10px'
+    gap: '12px'
   },
   input: {
     flex: 1,
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid var(--border)',
-    borderRadius: '8px',
-    padding: '8px 12px',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
+    padding: '10px 15px',
     color: 'white',
-    fontSize: '0.85rem',
+    fontSize: '0.9rem',
     outline: 'none'
   },
   sendBtn: {
-    background: 'var(--primary)',
+    background: '#00ffaa',
     color: 'black',
     border: 'none',
-    borderRadius: '8px',
-    width: '40px',
-    height: '40px',
+    borderRadius: '12px',
+    width: '45px',
+    height: '45px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'transform 0.2s',
+    boxShadow: '0 4px 15px rgba(0, 255, 170, 0.2)'
   }
 };
 

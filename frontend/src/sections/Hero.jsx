@@ -72,10 +72,10 @@ const Hero = ({ onStart, onExplore }) => {
 
           {/* ── KPI Cards ── */}
           <div className="grid grid-4" style={{ marginTop: '5rem', width: '100%' }}>
-            <KPI value="40%" label="Lower Fraud Loss" color="var(--primary)" />
-            <KPI value="75%" label="Fewer Manual Reviews" color="#7000ff" />
-            <KPI value="8%" label="False Positive Rate" color="var(--success)" />
-            <KPI value="<250ms" label="Decision Speed" color="var(--warning)" />
+            <KPI value="40% ↓" label="Fraud Loss reduction" color="var(--primary)" />
+            <KPI value="75% ↑" label="Analyst Efficiency" color="#7000ff" />
+            <KPI value="12% ↓" label="False Positive Rate" color="var(--success)" />
+            <KPI value="<250ms" label="Decision Latency" color="var(--warning)" />
           </div>
         </div>
       </div>
